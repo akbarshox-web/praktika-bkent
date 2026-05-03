@@ -23,22 +23,27 @@ mongoose.connect(process.env.MONGO_URI)
 // --- Middleware ---
 app.use(helmet());
 
-// .env dan domenlar ro'yxatini olamiz va massivga aylantiramiz (bo'shliqlarni olib tashlab)
+// .env dan domenlar ro'yxatini olamiz
 const allowedOrigins = process.env.CLIENT_URL 
     ? process.env.CLIENT_URL.split(',').map(origin => origin.trim()) 
-    : [];
+    : ['https://praktika-reakt.vercel.app', 'https://praktika-reakt-git-main-akbarshox-webs-projects.vercel.app'];
 
 app.use(cors({
     origin: function (origin, callback) {
-        // origin bo'sh bo'lsa yoki ro'yxatda bo'lsa ruxsat beramiz
-        if (!origin || allowedOrigins.includes(origin)) {
+        // Ruxsat berilgan domenlar ro'yxati
+        const allowedOrigins = process.env.CLIENT_URL 
+            ? process.env.CLIENT_URL.split(',').map(o => o.trim()) 
+            : [];
+            
+        // Agar so'rov vercel.app bilan tugasa yoki ro'yxatda bo'lsa ruxsat beramiz
+        if (!origin || allowedOrigins.includes(origin) || origin.endsWith('.vercel.app')) {
             callback(null, true);
         } else {
-            console.log("Blocked by CORS:", origin); // Qaysi domen bloklanganini ko'rish uchun
-            callback(new Error('CORS xatoligi: Ushbu domendan ruxsat yo\'q!'));
+            callback(new Error('CORS xatoligi: Ruxsat berilmagan domen!'));
         }
     },
-    credentials: true
+    credentials: true,
+    optionsSuccessStatus: 200
 }));
 app.use(express.json());
 app.use(cookieParser());
