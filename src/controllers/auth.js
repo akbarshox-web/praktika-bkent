@@ -52,7 +52,12 @@ export const verifyEmail = async (req, res) => {
         const accessToken = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '15m' });
         const refreshToken = jwt.sign({ id: user._id }, process.env.JWT_REFRESH_SECRET, { expiresIn: '7d' });
 
-        res.cookie('refreshToken', refreshToken, { httpOnly: true, maxAge: 7 * 24 * 60 * 60 * 1000 });
+        res.cookie('refreshToken', refreshToken, { 
+            httpOnly: true, 
+            secure: true, // HTTPS orqali ishlashi uchun (Vercel shuni talab qiladi)
+            sameSite: 'none', // Turli domenlar o'rtasida cookie yuborish uchun
+            maxAge: 7 * 24 * 60 * 60 * 1000 
+        });
         res.json({ message: "Email tasdiqlandi!", accessToken });
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -72,7 +77,12 @@ export const login = async (req, res) => {
         const accessToken = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '15m' });
         const refreshToken = jwt.sign({ id: user._id }, process.env.JWT_REFRESH_SECRET, { expiresIn: '7d' });
 
-        res.cookie('refreshToken', refreshToken, { httpOnly: true, maxAge: 7 * 24 * 60 * 60 * 1000 });
+        res.cookie('refreshToken', refreshToken, { 
+            httpOnly: true, 
+            secure: true, // HTTPS orqali ishlashi uchun (Vercel shuni talab qiladi)
+            sameSite: 'none', // Turli domenlar o'rtasida cookie yuborish uchun
+            maxAge: 7 * 24 * 60 * 60 * 1000 
+        });
         res.json({ accessToken });
     } catch (error) {
         res.status(500).json({ message: error.message });

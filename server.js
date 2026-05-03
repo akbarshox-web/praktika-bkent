@@ -23,15 +23,18 @@ mongoose.connect(process.env.MONGO_URI)
 // --- Middleware ---
 app.use(helmet());
 
-// .env dan domenlar ro'yxatini olamiz va massivga aylantiramiz
-const allowedOrigins = process.env.CLIENT_URL ? process.env.CLIENT_URL.split(',') : [];
+// .env dan domenlar ro'yxatini olamiz va massivga aylantiramiz (bo'shliqlarni olib tashlab)
+const allowedOrigins = process.env.CLIENT_URL 
+    ? process.env.CLIENT_URL.split(',').map(origin => origin.trim()) 
+    : [];
 
 app.use(cors({
     origin: function (origin, callback) {
-        // origin bo'sh bo'lsa (masalan, Postman orqali) yoki ro'yxatda bo'lsa ruxsat beramiz
+        // origin bo'sh bo'lsa yoki ro'yxatda bo'lsa ruxsat beramiz
         if (!origin || allowedOrigins.includes(origin)) {
             callback(null, true);
         } else {
+            console.log("Blocked by CORS:", origin); // Qaysi domen bloklanganini ko'rish uchun
             callback(new Error('CORS xatoligi: Ushbu domendan ruxsat yo\'q!'));
         }
     },
